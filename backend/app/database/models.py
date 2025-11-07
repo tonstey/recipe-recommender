@@ -1,2 +1,47 @@
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Integer, String, Boolean, JSON, ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import UUID
+from .initialize import Base
+import uuid
+
+class User(Base):
+  __tablename__= "users"
+  id = Column(Integer(), primary_key=True, index=True)
+  uuid = Column(UUID(as_uuid=True), index=True, default=uuid.uuid4, unique=True, nullable=False)
+
+  username = Column(String(100), nullable=False, unique=True)
+  email = Column(String(100), nullable=False, unique=True)
+  password = Column(String(), nullable=False)
+
+  pantry = relationship('Pantry', back_populates="owner", cascade="all, delete")
+  ratings = relationship('Rating', back_populates="user", cascade="all, delete")
+
+
+class Pantry(Base):
+  __tablename__= "pantries"
+  id = Column(Integer(), primary_key=True, index=True)
+  uuid = Column(UUID(as_uuid=True), index=True, default=uuid.uuid4, unique=True, nullable=False)
+  
+  stored_ingredients = Column(JSON, default=lambda:[])
+  user_id = Column(UUID(as_uuid=True), ForeignKey("users.uuid"), nullable=False)
+  owner = relationship('User', back_populates='pantry')
+
+
+class Recipe(Base):
+  __tablename__= "recipes"
+  id = Column(Integer(), primary_key=True, index=True)
+  uuid = Column(UUID(as_uuid=True), index=True, default=uuid.uuid4, unique=True, nullable=False)
+  name = Column(String(100), nullable=False, unique=True)
+
+  ratings = relationship('Rating', back_populates='recipe', cascade="all, delete")
+
+class Rating(Base):
+  __tablename__= "ratings"
+  id = Column(Integer(), primary_key=True, index=True)
+  uuid = Column(UUID(as_uuid=True), index=True, default=uuid.uuid4, unique=True, nullable=False)
+  
+  user_uuid = Column(UUID(as_uuid=True), ForeignKey("users.uuid"), nullable=False)
+  recipe_uuid = Column(UUID(as_uuid=True), ForeignKey("recipes.uuid"), nullable=False)
+
+  user = relationship('User', back_populates='ratings')
+  recipe = relationship('Recipe', back_populates='ratings')

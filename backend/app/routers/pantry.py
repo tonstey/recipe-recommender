@@ -1,21 +1,85 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app.database.initialize import DB_Session
+from database.initialize import get_db, ingredient_db
+from database.models import User, Pantry
+import uuid
+from middlewares.authentication import decode_access_token
+
+from pydantic import BaseModel
+from typing import Any, List
 
 router = APIRouter(prefix="/pantry", tags=[""])
 
-@router.get("/")
-def get_pantry():
-  pass
+class PantryResponse(BaseModel):
+  uuid: uuid.UUID
+  stored_ingredients: List[Any]
 
-@router.post("/")
-def create_pantry():
-  pass
 
-@router.put("/")
-def edit_pantry():
-  pass
+@router.get("/getpantry", response_model=PantryResponse)
+def get_pantry(username:str = Depends(decode_access_token), db: Session=Depends(get_db)):
+  user = db.query(User).filter(User.username == username).first()
 
-@router.put("/")
-def delete_pantry():
-  pass
+  if not user:
+    raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found.")
+
+  pantry = db.query(Pantry).filter(Pantry.owner == user).first()
+
+  if not pantry:
+    raise HTTPException(404, detail="Pantry not found.")
+  
+  ingredients = ingredient_db.find(pantry.stored_ingredients)
+
+  pantry_response = pantry.copy()
+  pantry_response.stored_ingredients = ingredients
+
+  return pantry_response
+
+
+
+@router.put("/editpantry")
+def edit_pantry(ingredient_id: int, username:str = Depends(decode_access_token), db: Session=Depends(get_db)):
+  user = db.query(User).filter(User.username == username).first()
+
+  if not user:
+    raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found.")
+
+  pantry = db.query(Pantry).filter(Pantry.owner == user).first()
+
+  if not pantry:
+    raise HTTPException(404, detail="Pantry not found.")
+  
+  pantry.stored_ingredients.append(ingredient_id)
+  db.commit()
+  db.refresh(pantry)
+  return pantry
+
+@router.delete("/deletepantry")
+def delete_pantry(username:str = Depends(decode_access_token), db: Session=Depends(get_db)):
+
+  user = db.query(User).filter(User.username == username).first()
+
+  if not user:
+    raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found.")
+
+  pantry = db.query(Pantry).filter(Pantry.owner == user).first()
+
+  if not pantry:
+    raise HTTPException(404, detail="Pantry not found.")
+
+  pantry.delete()
+  db.commit()
+  return
+
+class Ingredient(BaseModel):
+  name: str
+  id: int
+
+
+@router.get("/search/{ingredient}", response_model=list[Ingredient])
+def search_ingredient(ingredient: str, limit: int=20):
+  if not ingredient:
+    return []
+
+  results = ingredient_db.find({"name": { "$regex": ingredient, "$options": "i"}}).limit(limit)
+
+  return results
