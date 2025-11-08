@@ -27,3 +27,4 @@ MONGODB_URL = config("MONGODB_URL")
 client = MongoClient(MONGODB_URL)
 mongo_db = client["recipe_data"]
 ingredient_db = mongo_db["ingredients"]
+recipe_db = mongo_db["recipes"]
