@@ -2,13 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from database.initialize import get_db, recipe_db
+import ast
 
+from helpers.clean import default_if_nan
 
 from database.models import User, Pantry, RecipeList
 from middlewares.authentication import decode_access_token
 import jwt
 
-router = APIRouter(prefix="/recipe", tags=[""])
+router = APIRouter(prefix="/api/recipe", tags=["Recipes"])
 
 @router.get("/likedrecipes")
 def get_likedrecipes(username: str = Depends(decode_access_token), db: Session = Depends(get_db)):
@@ -23,6 +25,9 @@ def get_likedrecipes(username: str = Depends(decode_access_token), db: Session =
 
     return recipe_list.liked_recipes
 
+  except HTTPException as e:
+    print(str(e))
+    raise HTTPException(e.status_code, detail=e.detail)
   except SQLAlchemyError as e:
     print(str(e))
     raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error, please try again later")
@@ -49,6 +54,10 @@ def edit_likedrecipelist(recipe_id: int, username: str = Depends(decode_access_t
     db.refresh(recipe_list)
 
     return recipe_list.liked_recipes
+  
+  except HTTPException as e:
+    print(str(e))
+    raise HTTPException(e.status_code, detail=e.detail)
   except SQLAlchemyError as e:
     db.rollback()
     print(str(e))
@@ -61,7 +70,7 @@ def edit_likedrecipelist(recipe_id: int, username: str = Depends(decode_access_t
     raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error, please try again later.")
     
 
-@router.delete("/removelikedrecipe")
+@router.put("/removelikedrecipe")
 def remove_likedrecipelist(recipe_id: int, username: str = Depends(decode_access_token), db: Session = Depends(get_db)):
   try:
     user = db.query(User).filter(User.username == username).first()
@@ -76,7 +85,9 @@ def remove_likedrecipelist(recipe_id: int, username: str = Depends(decode_access
     db.refresh(recipe_list)
     return recipe_list
 
-
+  except HTTPException as e:
+    print(str(e))
+    raise HTTPException(e.status_code, detail=e.detail)
   except SQLAlchemyError as e:
     db.rollback()
     print(str(e))
@@ -109,6 +120,10 @@ def recommend_recipes(username: str = Depends(decode_access_token), db: Session 
     recipe_list.liked_recipes
     recommendations = []
     return recommendations
+  
+  except HTTPException as e:
+    print(str(e))
+    raise HTTPException(e.status_code, detail=e.detail)
   except SQLAlchemyError as e:
     print(str(e))
     raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error, please try again later")
@@ -120,15 +135,33 @@ def recommend_recipes(username: str = Depends(decode_access_token), db: Session 
     raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error, please try again later.")
   
 
-@router.get("/get")
-def get_recipes(recipe: str = "", limit: int =  10, db: Session = Depends(get_db)):
+@router.get("/search")
+def get_recipes(recipe: str = "", page:int=1,limit: int =  10):
   try:
-    recipes = recipe_db.find({"name": { "$regex": recipe, "$options": "i"}}).limit(limit)
+    print(recipe)
+    print(page)
+    print(limit)
+    recipes = recipe_db.find({"name": { "$regex": recipe, "$options": "i"}}, {"_id": 0}).skip((page-1)*limit).limit(limit)
 
-    if not recipes: 
-      return []
+   
 
-    return recipes
+    
+    recipeList = list(recipes)
+    
+    for i in recipeList:
+      i['name'] = str(default_if_nan(i['name'], ""))
+      i['id'] = int(default_if_nan(i['id'], 0))
+      i['minutes'] = int(default_if_nan(i['minutes'], 0))
+      i['tags'] = ast.literal_eval(default_if_nan(i['tags'], []))
+      i['nutrition'] = ast.literal_eval(default_if_nan(i['nutrition'], []))
+      i['n_steps'] = int(default_if_nan(i['n_steps'], 0))
+      i['steps'] = ast.literal_eval(default_if_nan(i['steps'], []))
+      i['description'] = str(default_if_nan(i['description'], ""))
+      i['ingredients'] = ast.literal_eval(default_if_nan(i['ingredients'], []))
+      i['n_ingredients'] = int(default_if_nan(i['n_ingredients'], 0))
+
+ 
+    return recipeList
 
   except SQLAlchemyError as e:
     print(str(e))

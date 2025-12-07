@@ -1,69 +1,61 @@
-import { useState } from "react"
-import Ingredients from "../components/ingredients/Ingredients"
+import MiniRecipeContainer from "../components/recipe/MiniRecipeContainer";
+import RecipeContainer from "../components/recipe/RecipeContainer";
 
-import MiniRecipeContainer from "../components/recipe/MiniRecipeContainer"
-import RecipeContainer from "../components/recipe/RecipeContainer"
-
-import recipes from "../data/recipedata"
+import recipes from "../data/recipedata";
+import SearchIngredient from "../components/ingredients/SearchIngredient";
+import { usePantryStore } from "../store/pantry";
+import { useRecipeStore } from "../store/recipe";
 
 export default function IngredientsTab() {
-  const [ingredientInput, setIngredientInput] = useState("")
-  const [ingredientList, setIngredientList] = useState<string[]>([])
-
-  const addIngredient = (ingredient:string) => {
-    setIngredientList(prev=>[...prev, ingredient])
-    setIngredientInput("")
-  }
-
-  const removeIngredient = (ingredient:string) => [
-    setIngredientList(prev=> prev.filter(item => item != ingredient))
-  ]
-
+  const { pantry } = usePantryStore.getState();
+  const { likedRecipes } = useRecipeStore.getState();
   return (
     <>
-      <div className="flex gap-2 w-full my-12">
-        <div className="bg-white border border-green-200 px-8 py-8 rounded-xl flex-1 flex flex-col gap-6 h-fit">
+      <div className="my-12 flex w-full gap-2">
+        <SearchIngredient />
+
+        <div className="flex-1 rounded-xl border border-green-200 bg-white px-8 py-8">
           <div>
-            <h1 className="text-green-800 text-3xl font-semibold">My Available Ingredients</h1>
-            <h1 className="text-gray-600">Add ingredients you have on hand</h1>
-          </div>
-
-          <div className="flex w-full gap-4">
-            <input className="border border-green-300 flex-1 pl-4 py-1 text-lg" type="text" placeholder="Add an ingredient..." value={ingredientInput} onChange={(e)=>setIngredientInput(e.target.value)}></input>
-            <button className="bg-green-600 text-white h-10 w-10 rounded-lg text-lg hover:cursor-pointer hover:bg-green-700" onClick={()=>addIngredient(ingredientInput)}>+</button>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {ingredientList.length > 0 ? 
-              ingredientList.map(i => <Ingredients ingredient={i} removeIngredient={removeIngredient}/>) :
-              <h1 className="text-gray-500 italic">No ingredients added yet</h1>
-            }
+            <h1 className="text-3xl font-semibold text-green-800">
+              Recipe Recommendations
+            </h1>
+            <h1 className="text-gray-600">
+              Based on your available ingredients and preferences
+            </h1>
+            {pantry.length > 4 ? (
+              <div className="mt-6 flex flex-col gap-3">
+                {recipes.map((item) => (
+                  <MiniRecipeContainer
+                    key={15}
+                    recipe={item}
+                    matchPercentage={0.143}
+                  />
+                ))}
+              </div>
+            ) : (
+              <h1 className="py-8 text-center text-gray-500">
+                Add some ingredients to see recommendations
+              </h1>
+            )}
           </div>
         </div>
-
-        <div className="bg-white border border-green-200 px-8 py-8 rounded-xl flex-1">
-          <div>
-            <h1 className="text-green-800 text-3xl font-semibold">Recipe Recommendations</h1>
-            <h1 className="text-gray-600">Based on your available ingredients and preferences</h1>
-            {ingredientList.length > 4 ? 
-              <div className="flex flex-col gap-3 mt-6">
-                {recipes.map(item => <MiniRecipeContainer key={15} recipe={item} matchPercentage={0.143}/>)}
-              </div>:
-              <h1 className="text-gray-500 text-center py-8">Add some ingredients to see recommendations</h1>
-            }
-          </div>
- 
-        </div>
-
-        
       </div>
 
       <div className="">
-        <h1 className="text-2xl font-bold text-green-800 mb-4">All Recommendations</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-20">
-              {recipes.map(item => <RecipeContainer key={2} recipe={item} matchPercentage={0.5}/>)}
+        <h1 className="mb-4 text-2xl font-bold text-green-800">
+          All Recommendations
+        </h1>
+        <div className="mb-20 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+          {recipes.map((item) => (
+            <RecipeContainer
+              key={Math.random() * 5}
+              recipe={item}
+              matchPercentage={0.5}
+              liked={likedRecipes.includes(item.id)}
+            />
+          ))}
         </div>
       </div>
     </>
-  )
+  );
 }

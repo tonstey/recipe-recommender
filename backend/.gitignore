@@ -5,3 +5,5 @@
 *.pyc
 
 *.csv
+
+database/dev.db

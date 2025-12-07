@@ -1,20 +1,33 @@
 from pydantic import BaseModel, EmailStr
+from .token import Token
+from typing import Optional
 import uuid
 
-class UserCreate(BaseModel):
+
+class BaseUser(BaseModel):
+  uuid: Optional[uuid.UUID]
   email: EmailStr
   username: str
   password: str
 
-class UserEdit(BaseModel):
-  email: EmailStr
-  username: str
+class UserEmail(BaseModel):
+  oldEmail: Optional[EmailStr] = None
+  newEmail: Optional[EmailStr] = None
+  email: Optional[EmailStr] = None
 
-class UserRequest(BaseModel):
+class PublicUserInfo(BaseModel):
   username: str
-  password: str
+  email: EmailStr
 
 class UserResponse(BaseModel):
   id: int
   uuid: uuid.UUID
   username: str
+
+class LoginRequest(BaseModel):
+  email: str
+  password: str
+
+class LoginResponse(BaseModel):
+  token: Token
+  user_info: Optional[PublicUserInfo] = None
