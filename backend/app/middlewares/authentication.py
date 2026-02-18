@@ -10,8 +10,9 @@ def encode_access_token(data: dict, expire_delta: timedelta | None = None):
   try:
     encode_data = data.copy()
 
-    expires = datetime.now(timezone.utc) + (expire_delta or timedelta(minutes=config("JWT_EXPIRE_MINUTES")))
+    expires = datetime.now(timezone.utc) + (expire_delta or timedelta(minutes=int(config("JWT_EXPIRE_MINUTES"))))
     encode_data.update({"exp": expires})
+    print(encode_data)
 
     token = jwt.encode(encode_data, key=config("JWT_SECRET_KEY"), algorithm=config("JWT_ALGORITHM"))
 

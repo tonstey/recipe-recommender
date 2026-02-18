@@ -15,6 +15,7 @@ class User(Base):
 
   pantry = relationship('Pantry', back_populates="owner", cascade="all, delete")
   ratings = relationship('Rating', back_populates="user", cascade="all, delete")
+  recipelist = relationship('RecipeList', back_populates="owner", cascade="all, delete")
 
 
 class Pantry(Base):
@@ -26,6 +27,14 @@ class Pantry(Base):
   user_id = Column(UUID(as_uuid=True), ForeignKey("users.uuid"), nullable=False)
   owner = relationship('User', back_populates='pantry')
 
+class RecipeList(Base):
+  __tablename__="recipelists"
+  id = Column(Integer(), primary_key=True, index=True)
+  uuid = Column(UUID(as_uuid=True), index=True, default=uuid.uuid4, unique=True, nullable=False)
+
+  liked_recipes = Column(JSON, default=lambda :[])
+  user_id = Column(UUID(as_uuid=True), ForeignKey("users.uuid"), nullable=False)
+  owner = relationship('User', back_populates='recipelist')
 
 class Recipe(Base):
   __tablename__= "recipes"

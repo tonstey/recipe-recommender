@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from database.initialize import get_db, ingredient_db
 from database.models import User, Pantry
@@ -7,6 +8,7 @@ from middlewares.authentication import decode_access_token
 
 from pydantic import BaseModel
 from typing import Any, List
+import jwt
 
 router = APIRouter(prefix="/pantry", tags=[""])
 
@@ -17,23 +19,33 @@ class PantryResponse(BaseModel):
 
 @router.get("/getpantry", response_model=PantryResponse)
 def get_pantry(username:str = Depends(decode_access_token), db: Session=Depends(get_db)):
-  user = db.query(User).filter(User.username == username).first()
+  try:
+    user = db.query(User).filter(User.username == username).first()
 
-  if not user:
-    raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found.")
+    if not user:
+      raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found.")
 
-  pantry = db.query(Pantry).filter(Pantry.owner == user).first()
+    pantry = db.query(Pantry).filter(Pantry.owner == user).first()
 
-  if not pantry:
-    raise HTTPException(404, detail="Pantry not found.")
-  
-  ingredients = ingredient_db.find(pantry.stored_ingredients)
+    if not pantry:
+      raise HTTPException(404, detail="Pantry not found.")
+    
+    ingredients = ingredient_db.find(pantry.stored_ingredients)
 
-  pantry_response = pantry.copy()
-  pantry_response.stored_ingredients = ingredients
+    pantry_response = pantry.copy()
+    pantry_response.stored_ingredients = ingredients
 
-  return pantry_response
-
+    return pantry_response
+  except SQLAlchemyError as e:
+    db.rollback()
+    print(str(e))
+    raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database error, please try again later")
+  except jwt.PyJWTError as e:
+    print(str(e))
+    raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Token error, plyease try again later.")
+  except Exception as e:
+    print(str(e))
+    raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error, please try again later.")
 
 
 @router.put("/editpantry")
