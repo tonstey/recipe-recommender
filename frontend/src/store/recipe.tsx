@@ -1,14 +1,17 @@
 import { create } from "zustand";
 import { type Recipe } from "../models/recipe";
-import { useUserStore } from "./user";
 
 interface RecipeStore {
   likedRecipes: Array<number>;
   recommendedRecipes: Array<Recipe>;
   searchRecipes: (recipe_name: string, page: number, limit: number) => any;
-  recommendRecipes: () => any;
-  getLikedRecipes: () => any;
-  editLikedRecipes: (recipe_id: number, type: "add" | "remove") => any;
+  recommendRecipes: (token: string) => any;
+  getLikedRecipes: (token: string) => any;
+  editLikedRecipes: (
+    token: string,
+    recipe_id: number,
+    type: "add" | "remove",
+  ) => any;
 }
 
 export const useRecipeStore = create<RecipeStore>()((set) => ({
@@ -32,10 +35,9 @@ export const useRecipeStore = create<RecipeStore>()((set) => ({
     return data;
   },
 
-  recommendRecipes: async () => {
-    const { token } = useUserStore.getState();
+  recommendRecipes: async (token: string) => {
     if (!token) {
-      return { success: false, error: "There is no token." };
+      throw new Error("There is no token.");
     }
 
     const res = await fetch(
@@ -49,15 +51,14 @@ export const useRecipeStore = create<RecipeStore>()((set) => ({
     const data = await res.json();
 
     if (!res.ok) {
-      return { success: false, error: data.error };
+      throw new Error(data.detail || "Recommending recipes was unsuccessful.");
     }
 
     set({ recommendedRecipes: data });
     return { success: true };
   },
 
-  getLikedRecipes: async () => {
-    const { token } = useUserStore.getState();
+  getLikedRecipes: async (token: string) => {
     if (!token) {
       return { success: false, error: "There is no token." };
     }
@@ -80,10 +81,13 @@ export const useRecipeStore = create<RecipeStore>()((set) => ({
     return { success: true };
   },
 
-  editLikedRecipes: async (recipe_id: number, type: "add" | "remove") => {
-    const { token } = useUserStore.getState();
+  editLikedRecipes: async (
+    token: string,
+    recipe_id: number,
+    type: "add" | "remove",
+  ) => {
     if (!token) {
-      return { success: false, error: "There is no token." };
+      throw new Error("There is no token.");
     }
 
     const res = await fetch(
@@ -98,6 +102,12 @@ export const useRecipeStore = create<RecipeStore>()((set) => ({
       },
     );
     const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        data.detail || "Editting liked recipes was unsuccessful.",
+      );
+    }
 
     set({ likedRecipes: data });
     return { success: true };

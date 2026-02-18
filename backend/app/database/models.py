@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, JSON, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.dialects.postgresql import UUID
 from .initialize import Base
 import uuid
@@ -45,6 +46,9 @@ class Recipe(Base):
   id = Column(Integer(), primary_key=True, index=True)
   uuid = Column(UUID(as_uuid=True), index=True, default=uuid.uuid4, unique=True, nullable=False)
   name = Column(String(100), nullable=False, unique=True)
+
+  rating_sum = Column(Integer(), default=0)
+  rating_count=Column(Integer(), default=0)
 
   ratings = relationship('Rating', back_populates='recipe', cascade="all, delete")
 

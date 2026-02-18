@@ -12,13 +12,16 @@ import IngredientOption from "./IngredientOption";
 
 import Select, { type SingleValue } from "react-select";
 import { properNouns } from "../../tools/format";
+import { useUserStore } from "../../store/user";
 
 export default function SearchIngredient() {
   const [ingredientInput, setIngredientInput] = useState("");
   const debounceIngredient = useDebounce(ingredientInput, 500);
 
-  const { pantry, searchIngredient, editIngredient } =
-    usePantryStore.getState();
+  const token = useUserStore((state) => state.token);
+
+  const pantry = usePantryStore((state) => state.pantry);
+  const { searchIngredient, editIngredient } = usePantryStore.getState();
 
   const { data, error, status } = useQuery({
     queryKey: ["ingredients", debounceIngredient],
@@ -40,7 +43,7 @@ export default function SearchIngredient() {
       inPantry: selected?.inPantry,
     };
     if (convert?.id && !pantry.some((item) => item.id === convert.id)) {
-      const result = await editIngredient(convert.id, "add");
+      const result = await editIngredient(token, convert.id, "add");
 
       if (!result.success) {
         console.log(result.error);

@@ -16,7 +16,7 @@ export default function RecipeContainer({
         <div className="flex w-full justify-between">
           <a
             className="w-fit text-xl font-semibold text-green-800 hover:underline"
-            href=""
+            href={`https://www.food.com/recipe/${recipe.name.replace(" ", "-")}-${recipe.id}`}
             target="_blank"
           >
             {properNouns(recipe.name)}

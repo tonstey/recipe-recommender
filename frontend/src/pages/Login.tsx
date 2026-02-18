@@ -13,6 +13,8 @@ import { RiLoader4Fill } from "react-icons/ri";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoLockClosedOutline } from "react-icons/io5";
 import { AiFillEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { usePantryStore } from "../store/pantry";
+import { useRecipeStore } from "../store/recipe";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -25,6 +27,8 @@ export default function Login() {
   const setAccessToken = useUserStore((state) => state.setToken);
   const setVerifyToken = useVerifyStore((state) => state.setVerifyToken);
   const setVerifyUser = useVerifyStore((state) => state.setVerifyUser);
+  const setPantry = usePantryStore((state) => state.getPantry);
+  const setLikedRecipes = useRecipeStore((state) => state.getLikedRecipes);
 
   const { error, status, mutate } = useMutation({
     mutationFn: login,
@@ -33,16 +37,20 @@ export default function Login() {
         throw new Error("No access token was returned.");
       }
 
+      const token = data.token.token;
+
       if (data.token.token_type === "login") {
         setAccessToken(data.token.token);
 
-        if (data.token.token) {
-          setUser(data.token.token);
+        if (token) {
+          setUser(token);
+          setPantry(token);
+          setLikedRecipes(token);
         }
       }
 
       if (data.token.token_type === "verify") {
-        setVerifyToken(data.token.token);
+        setVerifyToken(token);
         if (data.user_info) {
           setVerifyUser(data.user_info);
         }

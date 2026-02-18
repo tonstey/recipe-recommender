@@ -1,12 +1,15 @@
 import { create } from "zustand";
 import { type Ingredient } from "../models/pantry";
-import { useUserStore } from "./user";
 
 interface PantryStore {
   pantry: Array<Ingredient>;
   searchIngredient: (ingredient: string) => any;
-  getPantry: () => any;
-  editIngredient: (ingredientID: number, method: "add" | "remove") => any;
+  getPantry: (token: string) => any;
+  editIngredient: (
+    token: string,
+    ingredientID: number,
+    method: "add" | "remove",
+  ) => any;
 }
 
 export const usePantryStore = create<PantryStore>()((set) => ({
@@ -28,8 +31,7 @@ export const usePantryStore = create<PantryStore>()((set) => ({
     return data;
   },
 
-  getPantry: async () => {
-    const { token } = useUserStore.getState();
+  getPantry: async (token: string) => {
     if (!token) {
       return { success: false, error: "There is no token." };
     }
@@ -54,10 +56,13 @@ export const usePantryStore = create<PantryStore>()((set) => ({
     return { success: true };
   },
 
-  editIngredient: async (ingredientID: number, method: "add" | "remove") => {
-    const { token } = useUserStore.getState();
+  editIngredient: async (
+    token: string,
+    ingredientID: number,
+    method: "add" | "remove",
+  ) => {
     if (!token) {
-      return { success: false, error: "There is no token." };
+      throw new Error("There is no token.");
     }
     const res = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/pantry/editpantry?method=${method}`,
@@ -74,7 +79,7 @@ export const usePantryStore = create<PantryStore>()((set) => ({
     const data = await res.json();
 
     if (!res.ok) {
-      return { success: false, error: data.error };
+      throw new Error(data.detail || "Editing pantry was unsuccessful.");
     }
 
     set({ pantry: data });
