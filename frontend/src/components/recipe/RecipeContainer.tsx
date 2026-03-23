@@ -1,5 +1,8 @@
-import { GoHeart, GoHeartFill } from "react-icons/go";
 import { properNouns } from "../../tools/format";
+
+import { useRecipeStore } from "../../store/recipe";
+
+import { GoHeart, GoHeartFill } from "react-icons/go";
 
 export default function RecipeContainer({
   recipe,
@@ -10,22 +13,25 @@ export default function RecipeContainer({
   matchPercentage: number | null;
   liked: boolean;
 }) {
+  const { setDisplayRecipeID } = useRecipeStore.getState();
+
   return (
     <>
-      <div className="flex flex-col gap-4 rounded-lg bg-white px-8 py-6 transition-all duration-200 hover:scale-105 hover:shadow-lg">
+      <div
+        className="flex h-112 flex-col justify-evenly gap-4 rounded-lg bg-white px-8 py-6 transition-all duration-200 hover:scale-105 hover:cursor-pointer hover:shadow-lg"
+        onClick={() => {
+          setDisplayRecipeID(recipe.id);
+        }}
+      >
         <div className="flex w-full justify-between">
-          <a
-            className="w-fit text-xl font-semibold text-green-800 hover:underline"
-            href={`https://www.food.com/recipe/${recipe.name.replace(" ", "-")}-${recipe.id}`}
-            target="_blank"
-          >
+          <h1 className="w-fit text-xl font-semibold text-green-800">
             {properNouns(recipe.name)}
-          </a>
+          </h1>
           <div>
             {liked ? (
               <GoHeartFill className="text-4xl text-green-700 hover:cursor-pointer hover:text-green-500" />
             ) : (
-              <GoHeart className="text-4xl text-green-700 hover:cursor-pointer hover:text-green-500" />
+              <GoHeart className="text-4xl text-green-700 hover:cursor-pointer hover:text-green-400" />
             )}
           </div>
         </div>
@@ -87,14 +93,7 @@ export default function RecipeContainer({
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-green-100 pt-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">(4.2)</span>
-          </div>
-          <div className="flex flex-col items-end gap-1">
-            <span className="text-xs text-gray-500">Your rating:</span>
-          </div>
-        </div>
+        <h1 className="text-xs text-gray-500">Click to expand</h1>
       </div>
     </>
   );

@@ -21,7 +21,7 @@ export default function ConfirmAccount() {
   return (
     <>
       <div className="flex h-screen w-screen items-center justify-center border">
-        <div className="relative flex max-h-[90%] w-[40rem] flex-col justify-between rounded-lg bg-white px-4 py-8 shadow-lg">
+        <div className="relative flex max-h-[90%] w-160 flex-col justify-between rounded-lg bg-white px-4 py-8 shadow-lg">
           {status !== "pending" && (
             <button
               className="absolute top-4 left-3 flex items-center gap-2 rounded px-2 py-1 text-sm text-green-600 hover:cursor-pointer hover:bg-green-200"

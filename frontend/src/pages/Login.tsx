@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
 
 import { useUserStore } from "../store/user";
+import { useRecipeStore } from "../store/recipe";
 import { useVerifyStore } from "../store/verify";
 
 import type { LoginResponse } from "../models/verify";
@@ -13,8 +14,6 @@ import { RiLoader4Fill } from "react-icons/ri";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoLockClosedOutline } from "react-icons/io5";
 import { AiFillEyeInvisible, AiOutlineEye } from "react-icons/ai";
-import { usePantryStore } from "../store/pantry";
-import { useRecipeStore } from "../store/recipe";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -23,12 +22,12 @@ export default function Login() {
   const [isVisible, setIsVisible] = useState(true);
 
   const login = useUserStore((state) => state.login);
-  const setUser = useUserStore((state) => state.setUser);
+
   const setAccessToken = useUserStore((state) => state.setToken);
   const setVerifyToken = useVerifyStore((state) => state.setVerifyToken);
   const setVerifyUser = useVerifyStore((state) => state.setVerifyUser);
-  const setPantry = usePantryStore((state) => state.getPantry);
-  const setLikedRecipes = useRecipeStore((state) => state.getLikedRecipes);
+
+  const resetDisplay = useRecipeStore((state) => state.setDisplayRecipeID);
 
   const { error, status, mutate } = useMutation({
     mutationFn: login,
@@ -41,12 +40,6 @@ export default function Login() {
 
       if (data.token.token_type === "login") {
         setAccessToken(data.token.token);
-
-        if (token) {
-          setUser(token);
-          setPantry(token);
-          setLikedRecipes(token);
-        }
       }
 
       if (data.token.token_type === "verify") {
@@ -59,10 +52,14 @@ export default function Login() {
     },
   });
 
+  useEffect(() => {
+    resetDisplay(0);
+  }, []);
+
   return (
     <>
       <div className="flex h-screen w-screen items-center justify-center">
-        <div className="relative flex w-[28rem] flex-col items-center justify-center gap-6 rounded-lg border border-green-200 bg-white py-10 shadow-xl">
+        <div className="relative flex w-md flex-col items-center justify-center gap-6 rounded-lg border border-green-200 bg-white py-10 shadow-xl">
           {status !== "pending" && (
             <button
               className="absolute top-4 left-3 flex items-center gap-2 rounded px-2 py-1 text-sm text-green-600 hover:cursor-pointer hover:bg-green-200"

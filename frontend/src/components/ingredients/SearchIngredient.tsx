@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { useDebounce } from "../../tools/debounce";
+
 import { usePantryStore } from "../../store/pantry";
+import { useUserStore } from "../../store/user";
 
 import type { Ingredient } from "../../models/pantry";
 import type { SelectOption } from "../../models/option";
@@ -11,16 +13,14 @@ import Ingredients from "./Ingredients";
 import IngredientOption from "./IngredientOption";
 
 import Select, { type SingleValue } from "react-select";
-import { properNouns } from "../../tools/format";
-import { useUserStore } from "../../store/user";
 
 export default function SearchIngredient() {
   const [ingredientInput, setIngredientInput] = useState("");
   const debounceIngredient = useDebounce(ingredientInput, 500);
 
   const token = useUserStore((state) => state.token);
-
   const pantry = usePantryStore((state) => state.pantry);
+
   const { searchIngredient, editIngredient } = usePantryStore.getState();
 
   const { data, error, status } = useQuery({
@@ -29,13 +29,21 @@ export default function SearchIngredient() {
     enabled: debounceIngredient.length > 0,
   });
 
+  // Filters ingredients already in pantry & formats for search bar
   const searchResult =
-    data?.map((ing: Ingredient) => ({
-      label: properNouns(ing.name),
-      value: ing.id,
-      inPantry: pantry.includes(ing),
-    })) ?? [];
+    data
+      ?.filter(
+        (ing: Ingredient) =>
+          !pantry.some((pantryIng: Ingredient) => pantryIng.id === ing.id),
+      )
+      .map((ing: Ingredient) => ({
+        label: ing.name,
+        value: ing.id,
+        inPantry: ing.inPantry,
+      })) ?? [];
+  //
 
+  // Click on search item to add to pantry
   const addIngredient = async (selected: SingleValue<SelectOption>) => {
     const convert = {
       name: selected?.label,
@@ -46,12 +54,13 @@ export default function SearchIngredient() {
       const result = await editIngredient(token, convert.id, "add");
 
       if (!result.success) {
-        console.log(result.error);
+        alert(result.error);
         return;
       }
     }
     setIngredientInput("");
   };
+  //
 
   return (
     <>
@@ -100,7 +109,7 @@ export default function SearchIngredient() {
 
           <div className="flex flex-wrap gap-2">
             {pantry.length > 0 ? (
-              pantry.map((i) => <Ingredients ingredient={i} />)
+              pantry.map((i) => <Ingredients ingredient={i} key={i.id} />)
             ) : (
               <h1 className="text-gray-500 italic">No ingredients added yet</h1>
             )}

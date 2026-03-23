@@ -111,11 +111,11 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
   setUser: async (token: string) => {
     if (!token) {
-      return { success: false, error: "There is no token." };
+      throw new Error("There is no token.");
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/getuserdata`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/data`,
       {
         method: "GET",
         credentials: "include",
@@ -126,7 +126,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
     const data = await res.json();
 
     if (!res.ok) {
-      return { success: false, error: data.detail };
+      throw new Error(data.detail || "Error in fetching user info.");
     }
 
     set({ user: data });
@@ -137,23 +137,23 @@ export const useUserStore = create<UserStore>((set, get) => ({
   updateUser: async (user_info: any) => {
     const { token } = get();
     if (!token) {
-      return { success: false, error: "There is no token." };
+      throw new Error("There is no token.");
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/updateuser`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/data`,
       {
         method: "PUT",
         credentials: "include",
         headers: { Authorization: `Bearer ${token}` },
-        body: JSON.stringify(user_info),
+        body: JSON.stringify({ user: user_info }),
       },
     );
 
     const data = await res.json();
 
     if (!res.ok) {
-      return { success: false, error: data.detail };
+      throw new Error(data.detail || "Error in updating user.");
     }
 
     set({ user: data });
@@ -163,11 +163,11 @@ export const useUserStore = create<UserStore>((set, get) => ({
   deleteUser: async () => {
     const { token } = get();
     if (!token) {
-      return { success: false, error: "There is no token." };
+      throw new Error("There is no token.");
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/delete`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/data`,
       {
         method: "DELETE",
         credentials: "include",
@@ -178,7 +178,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
     const data = await res.json();
 
     if (!res.ok) {
-      return { success: false, error: data.detail };
+      throw new Error(data.detail || "Error in deleting user.");
     }
 
     set({ user: BaseUser });

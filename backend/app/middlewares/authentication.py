@@ -4,7 +4,7 @@ from datetime import timedelta, datetime, timezone
 from decouple import config
 import jwt
 
-oauth_schema = OAuth2PasswordBearer("/login")
+oauth_schema = OAuth2PasswordBearer(tokenUrl="/api/users/login")
 
 def encode_access_token(data: dict, encryption_type: str, expire_delta: timedelta | None = None):
   try:
@@ -21,12 +21,9 @@ def encode_access_token(data: dict, encryption_type: str, expire_delta: timedelt
 
 def decode_access_token( token: str = Depends(oauth_schema)):
   try:
-    payload = jwt.decode(token,  key=config("JWT_ACCESS_KEY"), algorithms=[config("JWT_ALGO")] )
+    payload = jwt.decode(token,  key=config("JWT_ACCESS_KEY"), algorithms=[config("JWT_ALGO")] )    
 
-    action = payload.get("action")
-    
-
-    if action == "loginuser":
+    if payload.get("action") == "loginuser":
       username = payload.get("username")
 
       if not username:
@@ -36,6 +33,8 @@ def decode_access_token( token: str = Depends(oauth_schema)):
     
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
 
+  except jwt.ExpiredSignatureError:
+    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Token expired.")
   except jwt.InvalidTokenError:
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
 
@@ -43,9 +42,8 @@ def decode_sendemail_token(token: str = Depends(oauth_schema)):
   try:
     payload = jwt.decode(token,  key=config("JWT_SENDEMAIL_KEY"), algorithms=[config("JWT_ALGO")])
 
-    action = payload.get("action")
     
-    if action == "sendemail":
+    if payload.get("action") == "sendemail":
       email = payload.get("email")
       username = payload.get("username")
       if not email or not username:
@@ -55,6 +53,8 @@ def decode_sendemail_token(token: str = Depends(oauth_schema)):
     
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid action.")
 
+  except jwt.ExpiredSignatureError:
+    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Token expired. Please log in to receive a new email.")
   except jwt.InvalidTokenError as e:
     print(str(e))
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token. Please log in again.")

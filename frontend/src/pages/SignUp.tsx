@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 
 import { useUserStore } from "../store/user";
+import { useRecipeStore } from "../store/recipe";
 import { useVerifyStore } from "../store/verify";
 
 import type { SignUpResponse } from "../models/user";
@@ -32,6 +33,8 @@ export default function SignUp() {
   const signup = useUserStore((state) => state.signup);
   const setUser = useVerifyStore((state) => state.setVerifyUser);
   const setToken = useVerifyStore((state) => state.setVerifyToken);
+
+  const resetDisplay = useRecipeStore((state) => state.setDisplayRecipeID);
 
   const passwordValidator = new PasswordValidator();
   passwordValidator
@@ -72,10 +75,14 @@ export default function SignUp() {
     },
   });
 
+  useEffect(() => {
+    resetDisplay(0);
+  }, []);
+
   return (
     <>
       <div className="flex h-screen w-screen items-center justify-center">
-        <div className="relative my-12 flex w-[28rem] flex-col items-center justify-center rounded-lg border border-green-200 bg-white px-4 py-10 shadow-xl">
+        <div className="relative my-12 flex w-md flex-col items-center justify-center rounded-lg border border-green-200 bg-white px-4 py-10 shadow-xl">
           {status !== "pending" && (
             <button
               className="absolute top-4 left-3 flex items-center gap-2 rounded px-2 py-1 text-sm text-green-600 hover:cursor-pointer hover:bg-green-200"

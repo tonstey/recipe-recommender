@@ -5,12 +5,13 @@ import { useRecipeStore } from "../store/recipe";
 import { useDebounce } from "../tools/debounce";
 
 import RecipeContainer from "../components/recipe/RecipeContainer";
+import RecipeModal from "../components/recipe/RecipeModal";
 
 import { IoSearchOutline } from "react-icons/io5";
 import { RiLoader4Fill } from "react-icons/ri";
 
 export default function RecipeTab() {
-  const { likedRecipes } = useRecipeStore.getState();
+  const likedRecipes = useRecipeStore((state) => state.likedRecipes);
 
   const [searchQuery, setSearchQuery] = useState("");
   const debounceRecipe = useDebounce(searchQuery, 500);
@@ -43,7 +44,7 @@ export default function RecipeTab() {
         <div className="my-12 rounded-xl border border-green-200 bg-white px-8 py-8">
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl font-semibold text-green-800">
-              Discover Recipes
+              Discover Recipes from Food.com
             </h1>
             <h1 className="text-gray-600">
               Search for recipes and rate the ones you try
@@ -71,6 +72,7 @@ export default function RecipeTab() {
           <div className="w-full text-center text-red-600">{error.message}</div>
         ) : recipes.length > 0 ? (
           <div className="mb-10 flex w-full flex-col items-center">
+            <RecipeModal />
             <div className="mb-20 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
               {recipes.map((item) => (
                 <RecipeContainer
@@ -93,7 +95,7 @@ export default function RecipeTab() {
           </div>
         ) : (
           <div className="w-full text-center text-green-700">
-            "There are no recipes with that name!"
+            There are no recipes with that name!
           </div>
         )}
       </div>

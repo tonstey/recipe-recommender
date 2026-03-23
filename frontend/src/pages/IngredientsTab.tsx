@@ -17,7 +17,7 @@ export default function IngredientsTab() {
         <div className="flex-1 rounded-xl border border-green-200 bg-white px-8 py-8">
           <div>
             <h1 className="text-3xl font-semibold text-green-800">
-              Recipe Recommendations
+              Top Recipe Recommendations
             </h1>
             <h1 className="text-gray-600">
               Based on your available ingredients and preferences
@@ -26,7 +26,7 @@ export default function IngredientsTab() {
               <div className="mt-6 flex flex-col gap-3">
                 {recipes.map((item) => (
                   <MiniRecipeContainer
-                    key={15}
+                    key={item.id}
                     recipe={item}
                     matchPercentage={0.143}
                   />

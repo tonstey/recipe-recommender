@@ -34,7 +34,7 @@ export const useVerifyStore = create<VerifyStore>((set, get) => ({
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/sendemail`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/verificationemail`,
       {
         method: "POST",
         credentials: "include",
@@ -78,7 +78,7 @@ export const useVerifyStore = create<VerifyStore>((set, get) => ({
     };
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/changeemail`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/newemail`,
       {
         method: "PUT",
         credentials: "include",
@@ -86,7 +86,7 @@ export const useVerifyStore = create<VerifyStore>((set, get) => ({
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newUserData),
+        body: JSON.stringify({ email_data: newUserData }),
       },
     );
 
@@ -95,11 +95,11 @@ export const useVerifyStore = create<VerifyStore>((set, get) => ({
     if (!res.ok) {
       throw new Error(data.detail || "Changing email failed.");
     }
-    return data.access_token;
+    return data.token;
   },
   verifyAccount: async (token: string) => {
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/confirm`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/verification`,
       {
         method: "POST",
         credentials: "include",

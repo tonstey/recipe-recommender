@@ -1,14 +1,59 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
+import { useQuery } from "@tanstack/react-query";
+
 import { useUserStore } from "../store/user";
+import { useRecipeStore } from "../store/recipe";
+import { usePantryStore } from "../store/pantry";
 
 import { LuChefHat } from "react-icons/lu";
 import { BsPerson } from "react-icons/bs";
 
 export default function NavBar() {
   const user = useUserStore((state) => state.user);
+
+  const getUser = useUserStore((state) => state.setUser);
+  const getLikedRecipes = useRecipeStore((state) => state.getLikedRecipes);
+  const getPantry = usePantryStore((state) => state.getPantry);
+
+  const access_token = useUserStore((state) => state.token);
   const logout = useUserStore((state) => state.logout);
   const navigate = useNavigate();
+
+  const { error: userError } = useQuery({
+    queryKey: ["user", access_token],
+    queryFn: () => getUser(access_token),
+    enabled: !!access_token,
+  });
+
+  const { error: recipeError } = useQuery({
+    queryKey: ["likedrecipes", access_token],
+    queryFn: () => getLikedRecipes(access_token),
+    enabled: !!access_token,
+  });
+
+  const { error: pantryError } = useQuery({
+    queryKey: ["pantry", access_token],
+    queryFn: () => getPantry(access_token),
+    enabled: !!access_token,
+  });
+
+  useEffect(() => {
+    if (userError) {
+      alert(userError.message);
+    }
+  }, [userError]);
+  useEffect(() => {
+    if (recipeError) {
+      alert(recipeError.message);
+    }
+  }, [recipeError]);
+  useEffect(() => {
+    if (pantryError) {
+      alert(pantryError.message);
+    }
+  }, [pantryError]);
 
   return (
     <>

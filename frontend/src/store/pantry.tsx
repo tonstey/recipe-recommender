@@ -33,56 +33,65 @@ export const usePantryStore = create<PantryStore>()((set) => ({
 
   getPantry: async (token: string) => {
     if (!token) {
-      return { success: false, error: "There is no token." };
+      throw new Error("There is no token.");
     }
 
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/pantry/getpantry`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pantry/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
 
     const data = await res.json();
 
     if (!res.ok) {
-      return { success: false, error: data.error };
+      throw new Error(data.detail || "Error in fetching pantry.");
     }
 
-    set({ pantry: data });
+    set({
+      pantry: data.stored_ingredients.map((item: Ingredient) => ({
+        ...item,
+        inPantry: true,
+      })),
+    });
     return { success: true };
   },
 
   editIngredient: async (
     token: string,
-    ingredientID: number,
+    ingredient_id: number,
     method: "add" | "remove",
   ) => {
     if (!token) {
       throw new Error("There is no token.");
     }
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/pantry/editpantry?method=${method}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ ingredient_id: ingredientID }),
+
+    if (!ingredient_id || !method) {
+      throw new Error("Missing fields.");
+    }
+
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pantry/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    );
+      body: JSON.stringify({ ingredient_id: ingredient_id, method: method }),
+    });
 
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.detail || "Editing pantry was unsuccessful.");
+      throw new Error(data.detail || "Error in editting pantry.");
     }
 
-    set({ pantry: data });
+    set({
+      pantry: data.stored_ingredients.map((item: Ingredient) => ({
+        ...item,
+        inPantry: true,
+      })),
+    });
 
     return { success: true };
   },

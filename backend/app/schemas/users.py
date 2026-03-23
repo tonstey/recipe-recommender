@@ -15,12 +15,12 @@ class UserEmail(BaseModel):
   newEmail: Optional[EmailStr] = None
   email: Optional[EmailStr] = None
 
-class PublicUserInfo(BaseModel):
+class PublicUserResponse(BaseModel):
   username: str
   email: EmailStr
 
 class UserResponse(BaseModel):
-  id: int
+  email: EmailStr
   uuid: uuid.UUID
   username: str
 
@@ -30,4 +30,4 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
   token: Token
-  user_info: Optional[PublicUserInfo] = None
+  user_info: Optional[PublicUserResponse] = None

@@ -1,6 +1,8 @@
 import { components, type OptionProps } from "react-select";
-import { FaCheck } from "react-icons/fa";
+
 import type { SelectOption } from "../../models/option";
+
+import { FaCheck } from "react-icons/fa";
 
 export default function IngredientOption(
   props: OptionProps<SelectOption, false>,
