@@ -24,7 +24,7 @@ export const useRecipeStore = create<RecipeStore>()((set) => ({
 
   searchRecipes: async (recipe_name: string, page: number, limit: number) => {
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/recipes?recipe=${recipe_name}&page=${page}&limit=${limit}`,
+      `${import.meta.env.BACKEND_URL}/api/recipes?recipe=${recipe_name}&page=${page}&limit=${limit}`,
       {
         credentials: "include",
       },
@@ -45,7 +45,7 @@ export const useRecipeStore = create<RecipeStore>()((set) => ({
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/recipes/recommend`,
+      `${import.meta.env.BACKEND_URL}/api/recipes/recommend`,
       {
         credentials: "include",
         headers: { Authorization: `Bearer ${token}` },
@@ -68,7 +68,7 @@ export const useRecipeStore = create<RecipeStore>()((set) => ({
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/recipes/liked`,
+      `${import.meta.env.BACKEND_URL}/api/recipes/liked`,
       {
         credentials: "include",
         headers: { Authorization: `Bearer ${token}` },
@@ -91,7 +91,7 @@ export const useRecipeStore = create<RecipeStore>()((set) => ({
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/recipes/liked/${recipe_id}`,
+      `${import.meta.env.BACKEND_URL}/api/recipes/liked/${recipe_id}`,
       {
         method: "PUT",
         credentials: "include",
@@ -118,7 +118,7 @@ export const useRecipeStore = create<RecipeStore>()((set) => ({
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/recipes/liked/${recipe_id}`,
+      `${import.meta.env.BACKEND_URL}/api/recipes/liked/${recipe_id}`,
       {
         method: "DELETE",
         credentials: "include",

@@ -23,7 +23,7 @@ export const useRatingStore = create<RatingStore>(() => ({
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/ratings/${ratingID}`,
+      `${import.meta.env.BACKEND_URL}/api/ratings/${ratingID}`,
       {
         method: "GET",
         headers: {
@@ -49,19 +49,16 @@ export const useRatingStore = create<RatingStore>(() => ({
       throw new Error("Missing fields.");
     }
 
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/ratings/`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          req: { recipe_uuid: recipe_uuid, score: score },
-        }),
+    const res = await fetch(`${import.meta.env.BACKEND_URL}/api/ratings/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    );
+      body: JSON.stringify({
+        req: { recipe_uuid: recipe_uuid, score: score },
+      }),
+    });
 
     const data = await res.json();
 
@@ -86,7 +83,7 @@ export const useRatingStore = create<RatingStore>(() => ({
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/ratings/${ratingID}`,
+      `${import.meta.env.BACKEND_URL}/api/ratings/${ratingID}`,
       {
         method: "PUT",
         headers: {
@@ -117,7 +114,7 @@ export const useRatingStore = create<RatingStore>(() => ({
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/ratings/${ratingID}`,
+      `${import.meta.env.BACKEND_URL}/api/ratings/${ratingID}`,
       {
         method: "DELETE",
         headers: {

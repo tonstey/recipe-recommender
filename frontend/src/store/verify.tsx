@@ -34,7 +34,7 @@ export const useVerifyStore = create<VerifyStore>((set, get) => ({
     }
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/verificationemail`,
+      `${import.meta.env.BACKEND_URL}/api/users/verificationemail`,
       {
         method: "POST",
         credentials: "include",
@@ -78,7 +78,7 @@ export const useVerifyStore = create<VerifyStore>((set, get) => ({
     };
 
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/newemail`,
+      `${import.meta.env.BACKEND_URL}/api/users/newemail`,
       {
         method: "PUT",
         credentials: "include",
@@ -99,7 +99,7 @@ export const useVerifyStore = create<VerifyStore>((set, get) => ({
   },
   verifyAccount: async (token: string) => {
     const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/verification`,
+      `${import.meta.env.BACKEND_URL}/api/users/verification`,
       {
         method: "POST",
         credentials: "include",
