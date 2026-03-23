@@ -32,7 +32,7 @@ export default function RecipeModal() {
     queryKey: ["recipe", displayRecipeID],
     queryFn: async () => {
       const res = await fetch(
-        `${import.meta.env.BACKEND_URL}/api/recipes/${displayRecipeID}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/recipes/${displayRecipeID}`,
       );
       const data = await res.json();
       if (!res.ok) {

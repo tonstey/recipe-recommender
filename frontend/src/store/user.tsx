@@ -35,12 +35,15 @@ export const useUserStore = create<UserStore>((set, get) => ({
       throw new Error("Missing password.");
     }
 
-    const res = await fetch(`${import.meta.env.BACKEND_URL}/api/users/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, password: password }),
-    });
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/login`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: password }),
+      },
+    );
 
     const data = await res.json();
 
@@ -79,17 +82,20 @@ export const useUserStore = create<UserStore>((set, get) => ({
       throw new Error("Passwords do not match.");
     }
 
-    const res = await fetch(`${import.meta.env.BACKEND_URL}/api/users/signup`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        uuid: null,
-        username: username,
-        email: email,
-        password: password,
-      }),
-    });
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/signup`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uuid: null,
+          username: username,
+          email: email,
+          password: password,
+        }),
+      },
+    );
 
     const data = await res.json();
 
@@ -108,11 +114,14 @@ export const useUserStore = create<UserStore>((set, get) => ({
       throw new Error("There is no token.");
     }
 
-    const res = await fetch(`${import.meta.env.BACKEND_URL}/api/users/data`, {
-      method: "GET",
-      credentials: "include",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/data`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
 
     const data = await res.json();
 
@@ -131,12 +140,15 @@ export const useUserStore = create<UserStore>((set, get) => ({
       throw new Error("There is no token.");
     }
 
-    const res = await fetch(`${import.meta.env.BACKEND_URL}/api/users/data`, {
-      method: "PUT",
-      credentials: "include",
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ user: user_info }),
-    });
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/data`,
+      {
+        method: "PUT",
+        credentials: "include",
+        headers: { Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ user: user_info }),
+      },
+    );
 
     const data = await res.json();
 
@@ -154,11 +166,14 @@ export const useUserStore = create<UserStore>((set, get) => ({
       throw new Error("There is no token.");
     }
 
-    const res = await fetch(`${import.meta.env.BACKEND_URL}/api/users/data`, {
-      method: "DELETE",
-      credentials: "include",
-      headers: { Authentication: `Bearer ${token}` },
-    });
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/data`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: { Authentication: `Bearer ${token}` },
+      },
+    );
 
     const data = await res.json();
 

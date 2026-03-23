@@ -34,7 +34,7 @@ export default function Rating() {
     queryKey: ["avg_rating"],
     queryFn: async () => {
       const res = await fetch(
-        `${import.meta.env.BACKEND_URL}/api/ratings/recipe/${displayRecipeID}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/ratings/recipe/${displayRecipeID}`,
       );
 
       const data = await res.json();
@@ -56,7 +56,7 @@ export default function Rating() {
     queryFn: async () => {
       if (token) {
         const res = await fetch(
-          `${import.meta.env.BACKEND_URL}/api/ratings/${displayRecipeID}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/ratings/${displayRecipeID}`,
           {
             credentials: "include",
             headers: { Authorization: `Bearer ${token}` },
@@ -80,7 +80,7 @@ export default function Rating() {
       if (!token) {
         navigate("/login");
       }
-      await fetch(`${import.meta.env.BACKEND_URL}/api/ratings`, {
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/ratings`, {
         method: "POST",
         credentials: "include",
         headers: {

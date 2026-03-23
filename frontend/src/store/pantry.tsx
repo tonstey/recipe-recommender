@@ -17,7 +17,7 @@ export const usePantryStore = create<PantryStore>()((set) => ({
 
   searchIngredient: async (ingredient: string) => {
     const res = await fetch(
-      `${import.meta.env.BACKEND_URL}/api/pantry/search?ingredient=${ingredient}`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/pantry/search?ingredient=${ingredient}`,
     );
 
     const data = await res.json();
@@ -36,7 +36,7 @@ export const usePantryStore = create<PantryStore>()((set) => ({
       throw new Error("There is no token.");
     }
 
-    const res = await fetch(`${import.meta.env.BACKEND_URL}/api/pantry/`, {
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pantry/`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -71,7 +71,7 @@ export const usePantryStore = create<PantryStore>()((set) => ({
       throw new Error("Missing fields.");
     }
 
-    const res = await fetch(`${import.meta.env.BACKEND_URL}/api/pantry/`, {
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pantry/`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
