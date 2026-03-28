@@ -27,16 +27,16 @@ def decode_access_token( token: str = Depends(oauth_schema)):
       username = payload.get("username")
 
       if not username:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token. Please log in again.")
 
       return username
     
     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
 
   except jwt.ExpiredSignatureError:
-    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Token expired.")
+    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Token expired. Please log in again.")
   except jwt.InvalidTokenError:
-    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
+    raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token. Please log in again.")
 
 def decode_sendemail_token(token: str = Depends(oauth_schema)):
   try:

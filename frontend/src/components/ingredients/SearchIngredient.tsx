@@ -107,7 +107,7 @@ export default function SearchIngredient() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex max-h-84 flex-wrap gap-2 overflow-y-auto">
             {pantry.length > 0 ? (
               pantry.map((i) => <Ingredients ingredient={i} key={i.id} />)
             ) : (

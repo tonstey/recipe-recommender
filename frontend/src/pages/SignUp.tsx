@@ -81,8 +81,8 @@ export default function SignUp() {
 
   return (
     <>
-      <div className="flex h-screen w-screen items-center justify-center">
-        <div className="relative my-12 flex w-md flex-col items-center justify-center rounded-lg border border-green-200 bg-white px-4 py-10 shadow-xl">
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="relative my-12 flex w-md flex-col items-start justify-center overflow-auto rounded-lg border border-green-200 bg-white px-4 py-10 shadow-xl md:items-center">
           {status !== "pending" && (
             <button
               className="absolute top-4 left-3 flex items-center gap-2 rounded px-2 py-1 text-sm text-green-600 hover:cursor-pointer hover:bg-green-200"

@@ -1,3 +1,5 @@
+import { properSentences } from "../../../tools/format";
+
 import { PiChefHatBold, PiClockBold, PiForkKnifeBold } from "react-icons/pi";
 
 export default function Description({
@@ -29,7 +31,7 @@ export default function Description({
             Ingredients
           </h1>
         </div>
-        <div>{description}</div>
+        <div>{description && properSentences(description)}</div>
       </div>
     </>
   );

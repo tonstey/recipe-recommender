@@ -48,11 +48,11 @@ def signup_user(user: BaseUser, db: Session = Depends(get_db)):
     db.add(create_user)
     db.flush()
 
-    create_pantry = Pantry(owner = create_user)
+    create_pantry = Pantry(owner = create_user, user_id = create_user.uuid)
     db.add(create_pantry)
     db.flush()
 
-    create_recipelist = RecipeList(owner = create_user)
+    create_recipelist = RecipeList(owner = create_user, user_id = create_user.uuid)
     db.add(create_recipelist)
 
     db.commit()

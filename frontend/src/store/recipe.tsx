@@ -4,7 +4,7 @@ import { type Recipe } from "../models/recipe";
 interface RecipeStore {
   displayRecipeID: number;
   likedRecipes: Array<number>;
-  recommendedRecipes: Array<Recipe>;
+  recommendedRecipes: Array<{ recipe: Recipe; score: number }>;
   setDisplayRecipeID: (recipeID: number) => any;
   searchRecipes: (recipe_name: string, page: number, limit: number) => any;
   recommendRecipes: (token: string) => any;

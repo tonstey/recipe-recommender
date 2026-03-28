@@ -4,6 +4,8 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from pymongo import MongoClient
 
 from decouple import config
+from pathlib import Path
+import pickle
 import os # FOR CREATING DB LOCALLY
 
 
@@ -37,3 +39,7 @@ mongo_db = client["recipe_data"]
 ingredient_db = mongo_db["ingredients"]
 recipe_db = mongo_db["recipes"]
 # END
+
+
+with open(Path(__file__).resolve().parent.parent / "ipynbs" / "data.pkl", 'rb') as file:
+   recipe_scores = pickle.load(file)

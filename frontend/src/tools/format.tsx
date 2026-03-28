@@ -6,3 +6,18 @@ export function properNouns(word: string) {
 
   return capitalize.join(" ");
 }
+
+export function properSentences(sentence: string) {
+  let period = sentence
+    .split(". ")
+    .map((sent) => sent[0].toUpperCase() + sent.slice(1))
+    .join(". ");
+  let question = period
+    .split("? ")
+    .map((sent) => sent[0].toUpperCase() + sent.slice(1))
+    .join("? ");
+  return question
+    .split("! ")
+    .map((sent) => sent[0].toUpperCase() + sent.slice(1))
+    .join("! ");
+}

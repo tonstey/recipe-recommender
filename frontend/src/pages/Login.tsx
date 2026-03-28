@@ -58,7 +58,7 @@ export default function Login() {
 
   return (
     <>
-      <div className="flex h-screen w-screen items-center justify-center">
+      <div className="flex h-screen w-full items-start justify-center overflow-auto md:items-center">
         <div className="relative flex w-md flex-col items-center justify-center gap-6 rounded-lg border border-green-200 bg-white py-10 shadow-xl">
           {status !== "pending" && (
             <button
@@ -77,7 +77,7 @@ export default function Login() {
             <div className="text-2xl font-bold text-green-800">
               Welcome Back
             </div>
-            <div className="text-green-600">
+            <div className="text-md text-green-600">
               Sign in to your Savorly account
             </div>
           </div>
@@ -88,7 +88,9 @@ export default function Login() {
             <div>
               <div className="flex w-full flex-col items-center gap-5">
                 <div className="flex w-full flex-col gap-1">
-                  <h1 className="font-semibold text-green-700">Email</h1>
+                  <h1 className="text-md font-semibold text-green-700">
+                    Email
+                  </h1>
                   <div className="relative h-fit">
                     <CiMail className="absolute top-1/2 left-3 -translate-y-1/2 transform text-xl" />
                     <input

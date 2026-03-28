@@ -64,6 +64,9 @@ export default function Rating() {
         );
         const data = await res.json();
         if (!res.ok) {
+          if (res.status === 401) {
+            alert(data.detail);
+          }
           throw new Error(data.detail || "Error in fetching user rating.");
         }
         return data;

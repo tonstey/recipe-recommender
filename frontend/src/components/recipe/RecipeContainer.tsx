@@ -1,4 +1,4 @@
-import { properNouns } from "../../tools/format";
+import { properNouns, properSentences } from "../../tools/format";
 
 import { useRecipeStore } from "../../store/recipe";
 
@@ -18,7 +18,7 @@ export default function RecipeContainer({
   return (
     <>
       <div
-        className="flex h-112 flex-col justify-evenly gap-4 rounded-lg bg-white px-8 py-6 transition-all duration-200 hover:scale-105 hover:cursor-pointer hover:shadow-lg"
+        className="flex h-120 flex-col justify-evenly gap-4 rounded-lg bg-white px-8 py-6 transition-all duration-200 hover:scale-105 hover:cursor-pointer hover:shadow-lg"
         onClick={() => {
           setDisplayRecipeID(recipe.id);
         }}
@@ -29,14 +29,14 @@ export default function RecipeContainer({
           </h1>
           <div>
             {liked ? (
-              <GoHeartFill className="text-4xl text-green-700 hover:cursor-pointer hover:text-green-500" />
+              <GoHeartFill className="text-4xl text-green-700" />
             ) : (
-              <GoHeart className="text-4xl text-green-700 hover:cursor-pointer hover:text-green-400" />
+              <GoHeart className="text-4xl text-green-700" />
             )}
           </div>
         </div>
 
-        <div className="flex gap-4 text-center">
+        <div className="flex flex-wrap gap-4 text-center">
           <h1 className="w-fit rounded-full bg-green-100 px-3 font-semibold text-green-700">
             {recipe.minutes} min
           </h1>
@@ -52,8 +52,8 @@ export default function RecipeContainer({
           )}
         </div>
 
-        <div className="text-md mb-4 max-h-60 overflow-hidden overflow-ellipsis text-gray-600">
-          {recipe.description}
+        <div className="text-md mb-4 max-h-60 truncate text-gray-600">
+          {recipe.description && properSentences(recipe.description)}
         </div>
 
         <div className="mb-4 grid grid-cols-3 gap-3 rounded-lg bg-green-50 p-3">

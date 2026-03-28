@@ -46,7 +46,7 @@ export default function CheckEmail() {
 
   return (
     <>
-      <div className="flex h-screen w-screen items-center justify-center border">
+      <div className="flex h-full w-full items-center justify-center">
         <div className="relative flex max-h-[90%] w-160 flex-col justify-between rounded-lg bg-white px-4 py-8 shadow-lg">
           <div className="w-full">
             {verifyEmailStatus !== "pending" &&
