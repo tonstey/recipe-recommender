@@ -146,6 +146,10 @@ def recommend_recipes(username: str = Depends(decode_access_token), db: Session 
     pantry = db.scalars(select(Pantry).where(Pantry.user_id == user.uuid)).first()
     if not pantry:
       raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Pantry not found.")
+    
+    liked_recipes = db.scalars(select(RecipeList).where(RecipeList.user_id == user.uuid)).first()
+    if not liked_recipes:
+      raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Liked recipes not found.")
 
     user_ing = pantry.stored_ingredients
     ids = list(recipe_scores.keys())
@@ -161,11 +165,16 @@ def recommend_recipes(username: str = Depends(decode_access_token), db: Session 
       jaccard = intersection / union if union != 0 else 0
 
       rating = db.scalars(select(Rating).where(Rating.user_uuid == user.uuid).where(Rating.recipe_id == i["id"])).first()
+      isLiked = i["id"] in liked_recipes.liked_recipes
 
       if rating:
-        final_score = 0.65 * jaccard + 0.25 * (rating.score / 5) + 0.1 * (recipe_scores[i["id"]] / 5)
+        final_score = 0.6 * jaccard + 0.25 * (rating.score / 5) + 0.15 * (recipe_scores[i["id"]] / 5)
       else:
-        final_score = 0.7 * jaccard + 0.3 * (recipe_scores[i["id"]] / 5)
+        final_score = 0.75 * jaccard + 0.25 * (recipe_scores[i["id"]] / 5)
+
+      if isLiked:
+        final_score += 0.1
+
       final_scores.append((i["id"], final_score))
 
     final_scores.sort(key=lambda x: x[1], reverse=True)
