@@ -41,5 +41,5 @@ recipe_db = mongo_db["recipes"]
 # END
 
 
-with open(Path(__file__).resolve().parent.parent.parent / "ipynbs" / "data.pkl", 'rb') as file:
+with open(Path(__file__).resolve().parent.parent / "recipe_scores" / "data.pkl", 'rb') as file:
    recipe_scores = pickle.load(file)
